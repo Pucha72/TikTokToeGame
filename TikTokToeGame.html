@@ -4,18 +4,42 @@
 </head>
 
 <body>
+
+<input type='checkbox' class='single_player' checked /> Multiplayer(2 Player)
 <div class='board'>
 
 </div>
 </body>
 <script>
 $(document).ready(function(){ 
-var is_winner=0;
-var start_with='Player A';
-var current_turn='Player A';
-var count=1;
+
+
+var is_one_player=$('.single_player').is(":checked");
+$(".single_player").click(function(){
+  is_one_player=$('.single_player').is(":checked");
+});
+var is_winner;
+var start_with;
+var current_turn;
+var count;
+var is_first='1';
+
+function intial(_is_winner,_start_with,_current_turn,_count,_is_first){
+  is_winner=_is_winner;
+  start_with=_start_with;
+  current_turn=_current_turn;
+  count=_count;
+  is_first=_is_first;
+  $(".board").html(''); 
+}
+
 load_board();
 function load_board(){
+debugger
+if(is_first==1)
+intial(0,'Player A','Player A',1); 
+else
+intial(0,'Player B','Player B',0); 
 
  var _thead='<thead><tr><td colspan="3"><span class="current_player_state">'+start_with+'</span></td></tr></thead>';
   
@@ -35,17 +59,39 @@ function load_board(){
 }
 
 $(".tick").click(function(){  
-
+ $(".single_player").attr('disabled','disabled');
 		if(current_turn=='Player A')
 		{$(this).html('X');
 		  current_turn='Player B'; 
-		   $(this).addClass('player_B_selected');
+		   $(this).addClass('player_B_selected'); 
+		   
+		   
+		   if(is_one_player==false){
+		   setTimeout(function(){
+		   
+           var row =Math.floor(Math.random() * 3)+1;
+		   var col =Math.floor(Math.random() * 3)+1;
+		   if($(".tick").length>0){
+		   while (!$(".box"+row+col).hasClass('tick')) {
+			   row =Math.floor(Math.random() * 3)+1;
+		       col =Math.floor(Math.random() * 3)+1;
+			}
+			
+		      $(".box"+row+col).click(); 
+		   }
+		     
+			 
+		   },1000);
+		   }
+		   
 		}
 		else{
 		$(this).html('O');
 		current_turn='Player A'; 
 		   $(this).addClass('player_A_selected');
 		}
+		
+		
 		  $(".current_player_state").html(current_turn);
 		  game_logic();
 		   $(this).removeClass('tick');
@@ -54,11 +100,13 @@ $(".tick").click(function(){
 			count+=1;
 			if (is_winner==1)
 			   {
-				 setTimeout(function(){location.reload()}, 2000);
+				 setTimeout(function(){  reset_page(); }, 2000);
 			   }
 			   
 			 if(count==10){
-			  $(".current_player_state").html('Match Tie!');
+			 if (is_winner!=1){
+			 $(".current_player_state").html('Match Tie!');
+			 }
 			   reset_page();
 			 }
 		   } 
@@ -111,14 +159,28 @@ if(_player=='X')
 						  reset_page();
 }
 function reset_page(){
+$(".tick").removeClass('tick');
  setTimeout(function(){location.reload()}, 2000);
  $(".reset").bind('click');
  $(".reset").html('reset');
 	$(".reset").click(function(){
-	 location.reload();
-	 
-
+	 <!-- location.reload(); -->
+	 _reset();
 });
+}
+function _reset(){
+ switch(is_first) {
+  case 1:
+       is_first=0;
+    break;
+  case 0:
+          is_first=1;
+
+    break;
+  default:
+    // code block
+}
+load_board();
 }
 });
 
@@ -135,14 +197,14 @@ body{
     background: radial-gradient(#953838, transparent);
 	font-weight: bold;
     font-family: calibri;
-	 opacity: '0.5',
+	 opacity: 0.8,
 }
 
 .player_B_selected{
     background: radial-gradient(#4e8cb0, transparent);
 	font-weight: bold;
     font-family: calibri;
-	 opacity: '0.5',
+	 opacity: 0.8,
 }
 .current_player_state
 {
