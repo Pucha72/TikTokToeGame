@@ -1,6 +1,7 @@
 <html>
 <head>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -22,27 +23,28 @@ $(".single_player").click(function(){
 var is_winner;
 var start_with;
 var current_turn;
-var count;
-var is_first='1';
-
-function intial(_is_winner,_start_with,_current_turn,_count,_is_first){
+var count;  
+function intial(_is_winner,_start_with,_current_turn,_count){
   is_winner=_is_winner;
   start_with=_start_with;
   current_turn=_current_turn;
-  count=_count;
-  is_first=_is_first;
-  $(".board").html(''); 
-  console.log('1');
+  count=_count; 
+  $(".board").html('');  
 }
-
-load_board();
-function load_board(){
+function _reset(){ 
 debugger
-if(is_first==1)
-intial(0,'Player A','Player A',1); 
-else
+load_board();
+}
+load_board();
+function load_board(){ 
+if(localStorage.is_first==1){
+localStorage.is_first=0;
+intial(0,'Player A','Player A',0);
+} 
+else{
+localStorage.is_first=1;
 intial(0,'Player B','Player B',0); 
-
+}
  var _thead='<thead><tr><td colspan="3"><span class="current_player_state">'+start_with+'</span></td></tr></thead>';
   
  var _board_content=''; 
@@ -61,8 +63,9 @@ intial(0,'Player B','Player B',0);
   if(is_one_player==false && current_turn=='Player B'){
 		      auto_click();
 		   }
-}
-
+		   
+		   
+		   
 $(".tick").click(function(){  
  $(".single_player").attr('disabled','disabled');
 		if(current_turn=='Player A')
@@ -90,8 +93,8 @@ $(".tick").click(function(){
 		   if(count<=9){
 			count+=1;
 			if (is_winner==1)
-			   {
-				 setTimeout(function(){  reset_page(); }, 2000);
+			   {reset_page();
+				 <!-- setTimeout(function(){  reset_page(); }, 2000); -->
 			   }
 			   
 			 if(count==10){
@@ -107,8 +110,9 @@ $(".tick").click(function(){
 		   }
 });
 
-function game_logic(){
-debugger
+}
+
+function game_logic(){ 
      //row & col
 	 var i=1;
 	 for(i=1;i<=3;i++){
@@ -119,7 +123,7 @@ debugger
 			}
 			 	
 				if($(".box1"+i+"").html()!='' && $(".box2"+i+"").html()!=''&& $(".box3"+i+"").html()!=''){
-				debugger
+				
 				if($(".box1"+i+"").html()==$(".box2"+i+"").html() && $(".box2"+i+"").html() ==$(".box3"+i+"").html() ){ 
 							 announce_winner($(".box1"+i+"").html());
 				} 
@@ -147,11 +151,12 @@ if(_player=='X')
 						   {  $(".current_player_state").html('Player A Won!');  }
 						   else{  $(".current_player_state").html('Player B Won!');  }
 						   
-						  reset_page();
+						  //reset_page();
 }
 function reset_page(){
 $(".tick").removeClass('tick');
- setTimeout(function(){_reset();}, 2000);
+$(".tick").unbind('click');
+ setTimeout(function(){_reset();}, 500);
  <!-- $(".reset").bind('click'); -->
  <!-- $(".reset").html('reset'); -->
 	$(".reset").click(function(){
@@ -159,23 +164,11 @@ $(".tick").removeClass('tick');
 	 _reset();
 });
 }
-function _reset(){
- switch(is_first) {
-  case 1:
-       is_first=0;
-    break;
-  case 0:
-          is_first=1;
 
-    break;
-  default:
-    // code block
-}
-load_board();
-}
 
 $(".resetbutton").click(function(){
- location.reload();
+localStorage.is_first=1;
+ location.reload(); 
 });
 
 function auto_click(){
@@ -194,7 +187,7 @@ function auto_click(){
 		   }
 		     
 			 
-		   },1000);
+		   },500);
 }
 });
 
