@@ -1,0 +1,180 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+<div class='board'>
+
+</div>
+</body>
+<script>
+$(document).ready(function(){ 
+var is_winner=0;
+var start_with='Player A';
+var current_turn='Player A';
+var count=1;
+load_board();
+function load_board(){
+
+ var _thead='<thead><tr><td colspan="3"><span class="current_player_state">'+start_with+'</span></td></tr></thead>';
+  
+ var _board_content=''; 
+ var row=1;
+ for(row=1;row<=3;row++){
+   _board_content+="<tr class='row"+row+" "+row+"'>"; 
+   var col=1;
+   for(col=1;col<=3;col++){
+      _board_content+="<td class='tick box"+row+""+ col +"'></td>";
+   }
+     _board_content+='</tr>';
+ }
+ var _tbody='<tbody>'+_board_content+'</tbody>' 
+  var _table='<table border="1" >'+_thead+ _tbody+'</table>';
+  $(".board").html(_table);
+}
+
+$(".tick").click(function(){  
+
+		if(current_turn=='Player A')
+		{$(this).html('X');
+		  current_turn='Player B'; 
+		   $(this).addClass('player_B_selected');
+		}
+		else{
+		$(this).html('O');
+		current_turn='Player A'; 
+		   $(this).addClass('player_A_selected');
+		}
+		  $(".current_player_state").html(current_turn);
+		  game_logic();
+		   $(this).removeClass('tick');
+		   $(this).unbind('click');
+		   if(count<=9){
+			count+=1;
+			if (is_winner==1)
+			   {
+				 setTimeout(function(){location.reload()}, 2000);
+			   }
+			   
+			 if(count==10){
+			  $(".current_player_state").html('Match Tie!');
+			   reset_page();
+			 }
+		   } 
+		   else{
+			   $(".current_player_state").html('Match Tie!');
+			   reset_page();
+		   }
+});
+
+function game_logic(){
+debugger
+     //row & col
+	 var i=1;
+	 for(i=1;i<=3;i++){
+		if($(".box"+i+"1").html()!='' && $(".box"+i+"2").html()!=''&& $(".box"+i+"3").html()!=''){
+				if($(".box"+i+"1").html()==$(".box"+i+"2").html() && $(".box"+i+"2").html()==$(".box"+i+"3").html()){ 
+							 announce_winner($(".box"+i+"1").html());
+				}
+			}
+			 	
+				if($(".box1"+i+"").html()!='' && $(".box2"+i+"").html()!=''&& $(".box3"+i+"").html()!=''){
+				debugger
+				if($(".box1"+i+"").html()==$(".box2"+i+"").html() && $(".box2"+i+"").html() ==$(".box3"+i+"").html() ){ 
+							 announce_winner($(".box1"+i+"").html());
+				} 
+		}
+	}
+	//diagonal
+	if($(".box11").html()!='' && $(".box22").html()!=''&& $(".box33").html()!=''){
+			if($(".box11").html()==$(".box22").html() && $(".box22").html()==$(".box33").html()){ 
+						announce_winner($(".box11").html());
+			}
+		}
+	
+    //diagonal
+	if($(".box13").html()!='' && $(".box22").html()!=''&& $(".box31").html()!=''){
+			if($(".box13").html()==$(".box22").html() && $(".box22").html()==$(".box31").html()){
+			announce_winner($(".box13").html());
+				 
+			}
+		}
+	}
+	
+function announce_winner(_player){
+is_winner=1;
+if(_player=='X')
+						   {  $(".current_player_state").html('Player A Won!');  }
+						   else{  $(".current_player_state").html('Player B Won!');  }
+						   
+						  reset_page();
+}
+function reset_page(){
+ setTimeout(function(){location.reload()}, 2000);
+ $(".reset").bind('click');
+ $(".reset").html('reset');
+	$(".reset").click(function(){
+	 location.reload();
+	 
+
+});
+}
+});
+
+
+
+</script>
+
+<style>
+
+body{ 
+    font-family: calibri !important;
+}
+.player_A_selected{
+    background: radial-gradient(#953838, transparent);
+	font-weight: bold;
+    font-family: calibri;
+	 opacity: '0.5',
+}
+
+.player_B_selected{
+    background: radial-gradient(#4e8cb0, transparent);
+	font-weight: bold;
+    font-family: calibri;
+	 opacity: '0.5',
+}
+.current_player_state
+{
+    color: #b63884;
+    font-family: calibri;
+    font-weight: bold;
+}
+.current_player_state1
+{
+    color: #23d123;
+    font-family: calibri;
+    font-weight: bold;
+}
+td
+{
+font-size: 100;
+text-align:center;
+width: 150px;
+height: 150px;
+  padding: 10px;
+  border: 5px solid gray;
+  margin: 0;
+}
+
+.reset{
+	color: red;
+    font-size: 40px;
+    font-family: calibri;
+    font-weight: bold;
+}
+tbody tr td{
+cursor: pointer;
+}
+</style>
+</html>
