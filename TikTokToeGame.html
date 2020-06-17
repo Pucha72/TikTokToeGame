@@ -8,9 +8,10 @@
 
 <input type='checkbox' class='single_player' /> Multiplayer(2 Player)
 <input type='button' class='resetbutton' value='Reset'/>
-<div class='board'>
 
-</div>
+
+<div class='board'></div>
+<div class='result'></div>
 </body>
 <script>
 $(document).ready(function(){ 
@@ -20,6 +21,9 @@ var is_one_player=$('.single_player').is(":checked");
 $(".single_player").click(function(){
   is_one_player=$('.single_player').is(":checked");
 });
+localStorage.a_wins=0;
+localStorage.b_wins=0;
+localStorage.a_b_tie=0;
 var is_winner;
 var start_with;
 var current_turn;
@@ -30,6 +34,20 @@ function intial(_is_winner,_start_with,_current_turn,_count){
   current_turn=_current_turn;
   count=_count; 
   $(".board").html('');  
+  var _result='<table border="1" class="result_table">';
+  _result +='<caption>Result</caption>';
+   _result +='<thead>';
+    _result+='<tr><th> A wins </th>';
+	_result+='<th> B wins </th>';
+	_result+='<th> Tie </th> </tr>'; 
+    _result+='</thead>';
+	_result +='<tbody>';
+    _result+='<tr><td> '+localStorage.a_wins+'</td>';
+	_result+='<td> '+localStorage.b_wins+'</td>';
+	_result+='<td> '+localStorage.a_b_tie+' </td> </tr>'; 
+    _result+='</tbody>';
+	 _result+='</table>';
+  $(".result").html(_result);
 }
 function _reset(){ 
 debugger
@@ -45,7 +63,7 @@ else{
 localStorage.is_first=1;
 intial(0,'Player B','Player B',0); 
 }
- var _thead='<thead><tr><td colspan="3"><span class="current_player_state">'+start_with+'</span></td></tr></thead>';
+ var _thead='<thead><tr><th colspan="3"><span class="current_player_state">'+start_with+'</span></th></tr></thead>';
   
  var _board_content=''; 
  var row=1;
@@ -58,7 +76,7 @@ intial(0,'Player B','Player B',0);
      _board_content+='</tr>';
  }
  var _tbody='<tbody>'+_board_content+'</tbody>' 
-  var _table='<table border="1" >'+_thead+ _tbody+'</table>';
+  var _table='<table border="1" width="50%">'+_thead+ _tbody+'</table>';
   $(".board").html(_table);
   if(is_one_player==false && current_turn=='Player B'){
 		      auto_click();
@@ -91,20 +109,24 @@ $(".tick").click(function(){
 		   $(this).removeClass('tick');
 		   $(this).unbind('click');
 		   if(count<=9){
+		   debugger
 			count+=1;
 			if (is_winner==1)
 			   {reset_page();
 				 <!-- setTimeout(function(){  reset_page(); }, 2000); -->
 			   }
 			   
-			 if(count==10){
+			 if(count==9){
+			 
 			 if (is_winner!=1){
 			 $(".current_player_state").html('Match Tie!');
+			 				   localStorage.a_b_tie=parseInt(localStorage.a_b_tie)+1;  
 			 }
 			   reset_page();
 			 }
 		   } 
 		   else{
+		    localStorage.a_b_tie=parseInt(localStorage.a_b_tie)+1; 
 			   $(".current_player_state").html('Match Tie!');
 			   reset_page();
 		   }
@@ -147,9 +169,13 @@ function game_logic(){
 	
 function announce_winner(_player){
 is_winner=1;
-if(_player=='X')
-						   {  $(".current_player_state").html('Player A Won!');  }
-						   else{  $(".current_player_state").html('Player B Won!');  }
+						if(_player=='X')
+						   {  $(".current_player_state").html('Player A Won!'); 
+							localStorage.a_wins=parseInt(localStorage.a_wins)+1;  
+						   }
+						   else{  $(".current_player_state").html('Player B Won!');  
+						   localStorage.b_wins=parseInt(localStorage.b_wins)+1;  
+						   }
 						   
 						  //reset_page();
 }
@@ -168,6 +194,9 @@ $(".tick").unbind('click');
 
 $(".resetbutton").click(function(){
 localStorage.is_first=1;
+localStorage.a_wins=0;
+localStorage.b_wins=0;
+localStorage.a_b_tie=0;
  location.reload(); 
 });
 
@@ -230,17 +259,29 @@ width:100px;
     font-family: calibri;
     font-weight: bold;
 }
-td
+.board td
 {
-font-size: 100;
+font-size: 50px;
 text-align:center;
-width: 150px;
-height: 150px;
+width: 75px;
+height: 90px;
   padding: 10px;
-  border: 5px solid gray;
+  border: 0.5px solid gray;
   margin: 0;
 }
-
+.result table{ 
+width:100%;
+}
+.result td, th
+{
+font-size: 20;
+text-align:center;
+	width: 20px;
+	height: 20px;
+  padding: 2px;
+  border: 0.5px solid green;
+  margin: 0;
+}
 .reset{
 	color: red;
     font-size: 40px;
